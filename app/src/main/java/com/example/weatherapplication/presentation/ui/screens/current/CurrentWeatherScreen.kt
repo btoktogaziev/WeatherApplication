@@ -75,7 +75,6 @@ fun CurrentWeatherScreen(
             when (e) {
                 is CurrentWeatherEvent.NavigateToForecast ->
                     toForecastScreen(e.cityName)
-
                 is CurrentWeatherEvent.ShowError ->
                     Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             }

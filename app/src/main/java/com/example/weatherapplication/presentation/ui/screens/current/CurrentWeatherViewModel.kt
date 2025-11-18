@@ -2,11 +2,13 @@ package com.example.weatherapplication.presentation.ui.screens.current
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapplication.data.datastore.DataStoreManager
 import com.example.weatherapplication.domain.usecase.GetCurrentWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,6 +19,7 @@ import kotlin.math.roundToInt
 @HiltViewModel
 class CurrentWeatherViewModel @Inject constructor(
     private val getCurrentWeatherUseCase: GetCurrentWeatherUseCase,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
     data class DefaultUiState(
         val cityName: String = "",
@@ -43,6 +46,15 @@ class CurrentWeatherViewModel @Inject constructor(
     fun init() {
         if (isInitialized) return
         isInitialized = true
+
+        viewModelScope.launch {
+            dataStoreManager.city.collect { savedCity ->
+                if (savedCity.isNotBlank()) {
+                    _uiState.update { it.copy(cityName = savedCity) }
+                    loadWeather(savedCity)
+                }
+            }
+        }
     }
 
     fun onFieldChanged(city: String) {
@@ -100,7 +112,10 @@ class CurrentWeatherViewModel @Inject constructor(
     fun onSearchClicked() {
         val city = _uiState.value.cityName
         if (city.isNotBlank()) {
-            loadWeather(city)
+            viewModelScope.launch {
+                loadWeather(city)
+                dataStoreManager.saveCity(city)
+            }
         }
     }
 
