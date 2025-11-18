@@ -9,8 +9,9 @@ plugins {
 android {
     namespace = "com.example.weatherapplication"
     compileSdk = 36
-
     defaultConfig {
+        buildConfigField("String", "API_KEY", "\"3f9b8d82f7b3b7ecd9f29250e384b1b6\"")
+        buildConfigField("String", "BASE_URL", "\"https://api.openweathermap.org/data/2.5/\"")
         applicationId = "com.example.weatherapplication"
         minSdk = 24
         targetSdk = 35
@@ -38,9 +39,9 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
-
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -84,4 +85,7 @@ dependencies {
 
     //lottie
     implementation("com.airbnb.android:lottie-compose:6.7.1")
+
+    //datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
 }

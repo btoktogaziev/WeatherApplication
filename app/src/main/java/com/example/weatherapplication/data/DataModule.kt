@@ -1,21 +1,22 @@
-package com.example.weatherapplication.data.network
+package com.example.weatherapplication.data
 
+import android.content.Context
+import com.example.weatherapplication.BuildConfig
 import com.example.weatherapplication.data.network.api.WeatherApiService
+import com.example.weatherapplication.data.datastore.DataStoreManager
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import okhttp3.logging.HttpLoggingInterceptor.Level
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
-
-private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -33,7 +34,7 @@ object DataModule {
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         val logging = HttpLoggingInterceptor()
-            .setLevel(Level.BASIC)
+            .setLevel(HttpLoggingInterceptor.Level.BASIC)
         return logging
     }
 
@@ -49,7 +50,7 @@ object DataModule {
     @Singleton
     fun provideRetrofit(client: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client).build()
     }
@@ -59,4 +60,10 @@ object DataModule {
     fun provideWeatherApiService(retrofit: Retrofit): WeatherApiService {
         return retrofit.create(WeatherApiService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideDataStoreManager(
+        @ApplicationContext context: Context
+    ): DataStoreManager = DataStoreManager(context)
 }
