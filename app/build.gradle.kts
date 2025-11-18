@@ -1,9 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+}
+
+val localProps = Properties()
+val localPropsFile = File(rootProject.rootDir, "local.properties")
+if (localPropsFile.exists()&&localPropsFile.isFile){
+    localPropsFile.inputStream().use {
+        localProps.load(it)
+    }
 }
 
 android {
@@ -17,20 +27,20 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         debug {
-            buildConfigField("String", "API_KEY", "\"3f9b8d82f7b3b7ecd9f29250e384b1b6\"")
-            buildConfigField("String", "BASE_URL", "\"https://api.openweathermap.org/data/2.5/\"")
+            buildConfigField("String", "API_KEY", localProps.getProperty("API_KEY"))
+            buildConfigField("String", "BASE_URL", localProps.getProperty("BASE_URL"))
         }
         release {
-            buildConfigField("String", "API_KEY", "\"3f9b8d82f7b3b7ecd9f29250e384b1b6\"")
-            buildConfigField("String", "BASE_URL", "\"https://api.openweathermap.org/data/2.5/\"")
+            buildConfigField("String", "API_KEY", localProps.getProperty("API_KEY"))
+            buildConfigField("String", "BASE_URL", localProps.getProperty("BASE_URL"))
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

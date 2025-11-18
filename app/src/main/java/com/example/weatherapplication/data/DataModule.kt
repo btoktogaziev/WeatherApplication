@@ -1,9 +1,10 @@
 package com.example.weatherapplication.data
 
 import android.content.Context
-import com.example.weatherapplication.BuildConfig
-import com.example.weatherapplication.data.network.api.WeatherApiService
+import com.example.weatherapplication.BuildConfig.BASE_URL
+import com.example.weatherapplication.BuildConfig.DEBUG
 import com.example.weatherapplication.data.datastore.DataStoreManager
+import com.example.weatherapplication.data.network.api.WeatherApiService
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -42,7 +43,7 @@ object DataModule {
     @Singleton
     fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
         val client = OkHttpClient.Builder()
-        if (BuildConfig.DEBUG) {
+        if (DEBUG) {
             client.addInterceptor(loggingInterceptor)
         }
         return client.build()
@@ -52,7 +53,7 @@ object DataModule {
     @Singleton
     fun provideRetrofit(client: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client).build()
     }
