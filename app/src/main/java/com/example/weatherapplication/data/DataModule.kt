@@ -42,7 +42,9 @@ object DataModule {
     @Singleton
     fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
         val client = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
+        if (BuildConfig.DEBUG) {
+            client.addInterceptor(loggingInterceptor)
+        }
         return client.build()
     }
 
