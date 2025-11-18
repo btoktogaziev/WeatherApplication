@@ -16,10 +16,6 @@ data class ForecastWeatherItemDto(
     val main: Main,
 )
 
-data class City(
-    val name: String
-)
-
 fun ForecastWeatherItemDto.toDomain(): ForecastWeather {
     return ForecastWeather(
         minTemp = main.tempMin,
